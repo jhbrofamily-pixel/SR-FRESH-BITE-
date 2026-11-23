@@ -1,0 +1,78 @@
+{
+  "rules": {
+    "meta": {
+      "adminUid": {
+        ".read": true,
+        ".write": "!data.exists() && newData.val() === auth.uid"
+      }
+    },
+    "users": {
+      "$uid": {
+        ".read": "auth != null && ($uid === auth.uid || root.child('meta/adminUid').val() === auth.uid)",
+        ".write": "auth != null && root.child('meta/adminUid').val() === auth.uid"
+      }
+    },
+    "settings": {
+      ".read": "root.child('users/'+auth.uid+'/role').exists()",
+      ".write": "root.child('meta/adminUid').val() === auth.uid"
+    },
+    "shops": {
+      ".read": "root.child('meta/adminUid').val() === auth.uid",
+      "$id": {
+        ".read": "auth != null && root.child('users/'+auth.uid+'/shop').val() === $id",
+        ".write": "root.child('meta/adminUid').val() === auth.uid"
+      }
+    },
+    "products": {
+      ".read": "root.child('users/'+auth.uid+'/role').exists()",
+      "$id": {
+        ".write": "root.child('meta/adminUid').val() === auth.uid || (root.child('shops/'+root.child('users/'+auth.uid+'/shop').val()+'/active').val() === true && data.exists() && newData.child('price').val() === data.child('price').val() && newData.child('name').val() === data.child('name').val() && newData.child('code').val() === data.child('code').val() && newData.child('unit').val() === data.child('unit').val() && newData.child('active').val() === data.child('active').val())"
+      }
+    },
+    "bills": {
+      ".indexOn": [
+        "shop"
+      ],
+      ".read": "root.child('meta/adminUid').val() === auth.uid || (auth != null && query.orderByChild === 'shop' && query.equalTo === root.child('users/'+auth.uid+'/shop').val())",
+      "$id": {
+        ".write": "root.child('meta/adminUid').val() === auth.uid || (root.child('shops/'+root.child('users/'+auth.uid+'/shop').val()+'/active').val() === true && newData.exists() && newData.child('shop').val() === root.child('users/'+auth.uid+'/shop').val() && (!data.exists() || data.child('shop').val() === root.child('users/'+auth.uid+'/shop').val()))"
+      }
+    },
+    "pays": {
+      ".indexOn": [
+        "shop"
+      ],
+      ".read": "root.child('meta/adminUid').val() === auth.uid || (auth != null && query.orderByChild === 'shop' && query.equalTo === root.child('users/'+auth.uid+'/shop').val())",
+      "$id": {
+        ".write": "root.child('meta/adminUid').val() === auth.uid"
+      }
+    },
+    "rets": {
+      ".indexOn": [
+        "shop"
+      ],
+      ".read": "root.child('meta/adminUid').val() === auth.uid || (auth != null && query.orderByChild === 'shop' && query.equalTo === root.child('users/'+auth.uid+'/shop').val())",
+      "$id": {
+        ".write": "root.child('meta/adminUid').val() === auth.uid || (root.child('shops/'+root.child('users/'+auth.uid+'/shop').val()+'/active').val() === true && newData.exists() && newData.child('shop').val() === root.child('users/'+auth.uid+'/shop').val() && (!data.exists() || data.child('shop').val() === root.child('users/'+auth.uid+'/shop').val()))"
+      }
+    },
+    "exp": {
+      ".read": "root.child('meta/adminUid').val() === auth.uid",
+      ".write": "root.child('meta/adminUid').val() === auth.uid"
+    },
+    "closes": {
+      ".read": "root.child('meta/adminUid').val() === auth.uid",
+      ".write": "root.child('meta/adminUid').val() === auth.uid"
+    },
+    "ann": {
+      ".read": "root.child('users/'+auth.uid+'/role').exists()",
+      ".write": "root.child('meta/adminUid').val() === auth.uid"
+    },
+    "log": {
+      ".read": "root.child('meta/adminUid').val() === auth.uid",
+      "$id": {
+        ".write": "auth != null && root.child('users/'+auth.uid+'/role').exists() && !data.exists() && newData.exists()"
+      }
+    }
+  }
+}
